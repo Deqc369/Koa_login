@@ -15,18 +15,18 @@ async function getUserById (id) {
 
 async function createUser (name, apellido, email, password) {
   const query = 'INSERT INTO users (name,apellido, email, password) VALUES ($1, $2, $3,$4) RETURNING *'
-  const params = [name, email, apellido, password]
+  const params = [name, apellido, email, password]
   const res = await executeQuery(query, params)
   return res[0]
 }
 
-async function updateUser (id, name, email, password) {
+async function updateUser ({ id, name, apellido, email, password }) {
   const query = `
     UPDATE users
-    SET name = $2, email = $3, password = $4
+    SET name = $2, apellido = $3, email = $4, password = $5
     WHERE id = $1
     RETURNING *`
-  const params = [id, name, email, password]
+  const params = [id, name, apellido, email, password]
   const res = await executeQuery(query, params)
   return res[0]
 }
