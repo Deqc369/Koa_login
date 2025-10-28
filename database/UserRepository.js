@@ -13,7 +13,7 @@ async function getUserById (id) {
   return res[0]
 }
 
-async function createUser (name, apellido, email, password) {
+async function createUser ({ name, apellido, email, password }) {
   const query = 'INSERT INTO users (name,apellido, email, password) VALUES ($1, $2, $3,$4) RETURNING *'
   const params = [name, apellido, email, password]
   const res = await executeQuery(query, params)
