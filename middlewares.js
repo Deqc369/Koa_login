@@ -80,3 +80,12 @@ export const validateTokenMiddleware = async (ctx, next) => {
   }
   await next() // -> Si todo sale bien
 }
+export const errorCatcherMdw = async (ctx, next) => {
+  try {
+    await next()
+  } catch (err) {
+    ctx.status = err?.cause?.code ?? 500
+    ctx.body = err?.message ?? 'unknown error'
+    ctx.app.emit('error', err, ctx)
+  }
+}

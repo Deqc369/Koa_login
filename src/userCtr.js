@@ -23,7 +23,8 @@ export const createUser = async (ctx) => {
 export const updateUser = async (ctx) => {
   const id = ctx.params.id
   const { name, apellido, email, password } = ctx.request.body
-  const userUpdated = await UserRepository.updateUser({ id, name, apellido, email, password })
+  const passwordHashed = await hashPassword(password)
+  const userUpdated = await UserRepository.updateUser({ id, name, apellido, email, password: passwordHashed })
   ctx.body = { ok: true, userUpdated, message: 'Usuario Actualizado correctamente' }
 }
 
