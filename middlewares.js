@@ -1,3 +1,5 @@
+import { verifyToken } from './src/Utils/tokenGenerator.js'
+
 export async function setFinalResponseMdw (ctx, next) {
   await next()
   const rt = ctx.response.get('X-Response-Time')
@@ -50,4 +52,31 @@ export function bodyParserMdw () {
     }
     await next()
   }
+}
+// Manejo del Token Validacion
+export const validateTokenMiddleware = async (ctx, next) => {
+  const BEARER_START = 'Bearer '
+  const checkStringStartWith = (str, start) => str.startsWith(start)
+
+  function checkTokenExists (token) {
+    if (!token) {
+      throw new Error('Token not found') // Si el token no existe
+    }
+
+    if (!checkStringStartWith(token, BEARER_START)) {
+      throw new Error('Token invalid format') // Si el token no tiene la estructura correcta
+    }
+
+    const bearerJwt = token.split(BEARER_START)[1]
+    return bearerJwt
+  }
+
+  const token = checkTokenExists(ctx.headers.authorization) // nos entrega el Token
+
+  try {
+    ctx.currentUser = await verifyToken(token)
+  } catch (error) {
+    throw new Error('Error parsing token') // Si el token inspira o hay alguna modificacion forzada maliciosa
+  }
+  await next() // -> Si todo sale bien
 }
